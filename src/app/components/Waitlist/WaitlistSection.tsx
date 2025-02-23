@@ -1,6 +1,7 @@
 "use client"; // Ensure it's a Client Component
 
-
+import { db } from '@/firebase';
+import { collection, addDoc } from 'firebase/firestore';
 
 import React, { useState, useEffect } from "react";
 import { Input } from "@/app/components/ui/input";
@@ -23,8 +24,33 @@ import {
   HeartHandshake
 } from "lucide-react";
 
+
 export  function WaitlistSection() {
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState('');
+  const [name, setName] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState('');
+
+  const handleSubmit = async (e: { preventDefault: () => void; }) => {
+    e.preventDefault();
+    setLoading(true);
+    setMessage('');
+
+    try {
+      await addDoc(collection(db, 'waitlist'), {
+        name,
+        email,
+        timestamp: new Date(),
+      });
+      setMessage('Successfully added to the waitlist!');
+      setEmail('');
+      setName('');
+    } catch (error) {
+      setMessage('Error: Could not add to waitlist.');
+    }
+    setLoading(false);
+  };
+
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [timeLeft, setTimeLeft] = useState({
     days: 0,
@@ -34,7 +60,7 @@ export  function WaitlistSection() {
   });
 
   // Set the launch date
-  const launchDate = new Date("2025-03-21T00:00:00").getTime();
+  const launchDate = new Date("2025-03-30T00:00:00").getTime();
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -56,15 +82,15 @@ export  function WaitlistSection() {
     return () => clearInterval(timer);
   }, [launchDate]);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (email) {
-      setIsSubmitted(true);
-      // Here you would typically handle the email submission
-      setEmail("");
-      setTimeout(() => setIsSubmitted(false), 3000);
-    }
-  };
+  // const handleSubmit = (e: React.FormEvent) => {
+  //   e.preventDefault();
+  //   if (email) {
+  //     setIsSubmitted(true);
+  //     // Here you would typically handle the email submission
+  //     setEmail("");
+  //     setTimeout(() => setIsSubmitted(false), 3000);
+  //   }
+  // };
 
   const benefits = [
     {
@@ -217,7 +243,15 @@ export  function WaitlistSection() {
               </p>
             </div>
 
-            <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
+            <form onSubmit={handleSubmit} className="flex flex-col items-center justify-center  sm:flex-row gap-3 max-w-md mx-auto">
+            <Input
+          type="text"
+          placeholder="Name"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          className="bg-zinc-900/50 border-zinc-800/50 text-white placeholder:text-zinc-600 focus:border-violet-500/50"
+          required
+        />
               <Input
                 type="email"
                 placeholder="Enter your email"
@@ -228,8 +262,12 @@ export  function WaitlistSection() {
               <Button className="bg-violet-600 hover:bg-violet-700 text-white shadow-lg shadow-violet-500/20">
                 Join Waitlist <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
+              
             </form>
-
+            
+  
+      {message && <p className="mt-4 text-green-600">{message}</p>}
+  
             <AnimatePresence>
               {isSubmitted && (
                 <motion.div

@@ -16,7 +16,7 @@ function AboutSection() {
       <section className="relative h-screen flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0 z-0">
           <img
-            src="https://images.unsplash.com/photo-1497215728101-856f4ea42174?ixlib=rb-1.2.1&auto=format&fit=crop&w=2070&q=80"
+            src="https://c4.wallpaperflare.com/wallpaper/316/651/796/smoke-working-out-wallpaper-preview.jpg"
             alt="Office space"
             className="w-full h-full object-cover opacity-20"
           />
